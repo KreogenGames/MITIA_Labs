@@ -4,11 +4,11 @@ spring:
   datasource:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    url: "${DB_CONN_STRING}"
-    driverClassNname: org.postgresql.Driver
+    url: "${DB_CONN_STRING}?currentSchema=${spring.jpa.properties.hibernate.default_schema}"
+    driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     generate-ddl: false
     show-sql: true
     properties:

@@ -3,7 +3,9 @@ package ru.mirea.mitia.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.mirea.mitia.model.UserModel;
+import ru.mirea.mitia.dto.UserDto;
+import ru.mirea.mitia.mapper.UserMapper;
+import ru.mirea.mitia.repository.UserRepository;
 import ru.mirea.mitia.service.UserService;
 
 import java.util.List;
@@ -13,18 +15,24 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+
     @Override
-    public UserModel createUser(UserModel model) {
+    public UserDto createUser(UserDto dto) {
+        var entity = userMapper.toEntity(dto);
+        var save = userRepository.save(entity);
+
+        return userMapper.toDto(save);
+    }
+
+    @Override
+    public UserDto updateUser(UserDto model) {
         return null;
     }
 
     @Override
-    public UserModel updateUser(UserModel model) {
-        return null;
-    }
-
-    @Override
-    public List<UserModel> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return List.of();
     }
 

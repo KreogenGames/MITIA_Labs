@@ -1,16 +1,17 @@
 package ru.mirea.mitia.service;
 
+import ru.mirea.mitia.dto.UserDto;
 import ru.mirea.mitia.model.UserModel;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserModel createUser(UserModel model);
+    UserDto createUser(UserDto dto);
 
-    UserModel updateUser(UserModel model);
+    UserDto updateUser(UserDto model);
 
-    List<UserModel> getAllUsers();
+    List<UserDto> getAllUsers();
 
     Boolean deleteUser(Integer id);
 }
