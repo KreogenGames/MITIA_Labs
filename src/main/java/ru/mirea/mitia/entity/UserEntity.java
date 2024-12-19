@@ -1,6 +1,5 @@
 package ru.mirea.mitia.entity;
 
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -19,18 +18,18 @@ public class UserEntity {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 100)
     private String lastName;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 100)
     private String firstName;
 
-    @Column
+    @Column(length = 100)
     private String email;
 
-    @Column
+    @Column(length = 100)
     private String country;
 
-    @Column
+    @Column(length = 7)
     private String gender;
 }
