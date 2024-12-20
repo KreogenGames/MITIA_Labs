@@ -1,0 +1,93 @@
+- name: Setup PostgreSQL Database and Deploy Spring Boot Application
+  hosts: local
+  become: yes
+
+  vars:
+    db_user: "postgres"
+    db_password: "postgres"
+    db_conn_string: "jdbc:postgresql://mitia-db2:5432/postgres"
+    springboot_jar: "/mnt/c/Users/user/IdeaProjects/mitia/target/mitia-0.0.1-SNAPSHOT.jar"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: latest
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create a directory for the application
+      file:
+        path: /opt/myapp
+        state: directory
+
+    - name: Copy Spring Boot JAR file
+      copy:
+        src: "{{ springboot_jar }}"
+        dest: /opt/myapp/{{ springboot_jar | basename }}
+
+    - name: Create a Docker Compose file
+      copy:
+        dest: /opt/myapp/docker-compose.yml
+        content: |
+          version: '3.8'
+          services:
+            mitia-db2:
+              image: postgres
+              environment:
+                POSTGRES_USER: "{{ db_user }}"
+                POSTGRES_PASSWORD: "{{ db_password }}"
+                POSTGRES_DB: "postgres"
+              ports:
+                - "5435:5432"
+              volumes:
+                - mitia-db2:/var/lib/postgres
+
+            springboot-app:
+              image: openjdk:18-jdk
+              volumes:
+                - /opt/myapp/{{ springboot_jar | basename }}:/app/{{ springboot_jar | basename }}
+              environment:
+                DB_USER: "{{ db_user }}"
+                DB_PASSWORD: "{{ db_password }}"
+                DB_CONN_STRING: "{{ db_conn_string }}"
+              command: ["java", "-jar", "/app/{{ springboot_jar | basename }}"]
+              ports:
+                - "8080:8080"
+              depends_on:
+                - mitia-db2
+
+          volumes:
+            mitia-db2:
+
+    - name: Start PostgreSQL database using Docker Compose
+      docker_compose:
+        project_src: /opt/myapp
+        restarted: yes
+
+    - name: Wait for PostgreSQL to be ready
+      wait_for:
+        port: 5435
+        delay: 10
+        timeout: 60
+
+    - name: Start Spring Boot application using Docker Compose
+      docker_compose:
+        project_src: /opt/myapp
+        restarted: yes
+
+#    - name: Get logs from Spring Boot application
+#      command: docker-compose logs springboot-app
+#      args:
+#        chdir: /opt/myapp
+#      register: springboot_logs
+#      ignore_errors: yes
+#
+#    - debug:
+#        var: springboot_logs.stdout
