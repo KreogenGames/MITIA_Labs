@@ -14,7 +14,7 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("v1")
                 .displayName("MITIA v1")
-                .pathsToMatch("/**")
+                .pathsToMatch("/back/**")
                 .build();
     }
 }
