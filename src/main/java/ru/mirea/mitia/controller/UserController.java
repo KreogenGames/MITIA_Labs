@@ -16,9 +16,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "users")
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "users")
+@RequestMapping({"back", ""})
 public class UserController {
 
     private final UserService userService;
