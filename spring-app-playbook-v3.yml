@@ -69,6 +69,7 @@
         content: |
           <VirtualHost *:80>
               ServerName myapp.local
+              DocumentRoot /opt/myapp
               ProxyPass / http://localhost:8080/
               ProxyPassReverse / http://localhost:8080/
           </VirtualHost>
