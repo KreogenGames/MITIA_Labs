@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mitia-db2:
+    image: postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    ports:
+      - "5435:5432"
+    volumes:
+      - mitia-db2:/var/lib/postgres
+
+  springboot-app:
+    image: openjdk:18-jdk
+    volumes:
+      - ./target/mitia-0.0.1-SNAPSHOT.jar:/app/mitia-0.0.1-SNAPSHOT.jar  # Изменен путь
+    environment:
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      DB_CONN_STRING: "jdbc:postgresql://mitia-db2:5432/postgres"
+    command: ["java", "-jar", "/app/mitia-0.0.1-SNAPSHOT.jar"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mitia-db2
+
+volumes:
+  mitia-db2:

@@ -12,4 +12,8 @@
 
 При необходимости, измените схему в файле application.yml с public на нужную.
 
-Swagger для тестирования API находится по адресу: http://localhost:8080/swagger-ui/index.html
+Swagger для тестирования API находится по адресу: 
+http://localhost:8080/swagger-ui/index.html
+
+Запуск ansible playbook:
+sudo ansible-playbook -i ~/inventory.ini /mnt/c/Users/user/IdeaProjects/mitia/spring-app-playbook.yml

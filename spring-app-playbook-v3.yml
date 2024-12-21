@@ -1,0 +1,62 @@
+- name: Setup PostgreSQL Database and Deploy Spring Boot Application
+  hosts: local
+  become: yes
+
+  vars:
+    springboot_jar: "{{ workspace }}/target/mitia-0.0.1-SNAPSHOT.jar"  # Используется переменная workspace
+    docker_compose: "{{ workspace }}/docker-compose-jen.yml"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: latest
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create a directory for the application
+      file:
+        path: /opt/myapp
+        state: directory
+
+    - name: Copy Spring Boot JAR file
+      copy:
+        src: "{{ springboot_jar }}"
+        dest: /opt/myapp/{{ springboot_jar | basename }}
+
+    - name: Copy existing Docker Compose file
+      copy:
+        src: "{{ docker_compose }}"
+        dest: /opt/myapp/{{ docker_compose | basename }}
+
+    - name: Start PostgreSQL database using Docker Compose
+      docker_compose:
+        project_src: /opt/myapp
+        restarted: yes
+
+    - name: Wait for PostgreSQL to be ready
+      wait_for:
+        port: 5435
+        delay: 10
+        timeout: 60
+
+    - name: Start Spring Boot application using Docker Compose
+      docker_compose:
+        project_src: /opt/myapp
+        restarted: yes
+
+    - name: Get logs from Spring Boot application
+      command: docker-compose logs springboot-app
+      args:
+        chdir: /opt/myapp
+      register: springboot_logs
+      ignore_errors: yes
+
+    - debug:
+        var: springboot_logs.stdout
