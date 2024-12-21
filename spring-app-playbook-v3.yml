@@ -5,7 +5,6 @@
   vars:
     springboot_jar: "{{ workspace }}/target/mitia-0.0.1-SNAPSHOT.jar"  # Используется переменная workspace
     docker_compose: "{{ workspace }}/docker-compose-jen.yml"
-    apache_conf: "/etc/apache2/sites-available/myapp.conf"
 
   tasks:
     - name: Install required packages
