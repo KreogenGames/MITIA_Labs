@@ -70,8 +70,10 @@
           <VirtualHost *:80>
               ServerName myapp.local
               DocumentRoot /opt/myapp
-              ProxyPass / http://localhost:8080/
-              ProxyPassReverse / http://localhost:8080/
+              
+              # Проксирование всех маршрутов, начинающихся с /client
+              ProxyPass /client http://localhost:8080/client
+              ProxyPassReverse /client http://localhost:8080/client
           </VirtualHost>
       notify:
         - Restart Apache
