@@ -5,6 +5,7 @@
   vars:
     springboot_jar: "{{ workspace }}/target/mitia-0.0.1-SNAPSHOT.jar"  # Используется переменная workspace
     docker_compose: "{{ workspace }}/docker-compose-jen.yml"
+    apache_conf: "/etc/apache2/sites-available/myapp.conf"
 
   tasks:
     - name: Install required packages
@@ -12,6 +13,9 @@
         name:
           - docker.io
           - docker-compose
+          - apache2
+          - libapache2-mod-proxy
+          - libapache2-mod-proxy-http
         state: latest
 
     - name: Start Docker service
@@ -60,3 +64,31 @@
 
     - debug:
         var: springboot_logs.stdout
+
+    - name: Configure Apache to reverse proxy to Spring Boot application
+      copy:
+        dest: "{{ apache_conf }}"
+        content: |
+          <VirtualHost *:80>
+              ServerName myapp.local
+              ProxyPass / http://localhost:8080/
+              ProxyPassReverse / http://localhost:8080/
+          </VirtualHost>
+      notify:
+        - Restart Apache
+
+    - name: Enable Apache proxy modules
+      command: a2enmod proxy proxy_http
+      notify:
+        - Restart Apache
+
+    - name: Enable site configuration
+      command: a2ensite myapp.conf
+      notify:
+        - Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
