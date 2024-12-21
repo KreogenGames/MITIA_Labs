@@ -14,8 +14,6 @@
           - docker.io
           - docker-compose
           - apache2
-          - libapache2-mod-proxy
-          - libapache2-mod-proxy-http
         state: latest
 
     - name: Start Docker service
