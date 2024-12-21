@@ -1,5 +1,5 @@
 - name: Setup PostgreSQL Database and Deploy Spring Boot Application
-  hosts: local
+  hosts: localhost
   become: yes
 
   vars:
